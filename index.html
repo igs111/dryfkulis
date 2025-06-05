@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dryf kulis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,700;1,400&family=Syne:wght@700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&display=swap" rel="stylesheet">
   <style>
     :root {
       --main-color: #ffffff;
@@ -22,7 +22,7 @@
 
     html, body {
       height: 100%;
-      font-family: 'Cormorant', serif;
+      font-family: 'Syne', sans-serif;
       background-color: var(--background-color);
       color: var(--main-color);
       overflow-x: hidden;
@@ -32,12 +32,13 @@
       content: '';
       position: fixed;
       top: 0;
-      left: 10px;
-      width: 4px;
-      height: 100vh;
+      left: 8px;
+      width: 10px;
+      height: 30px;
+      border-radius: 999px;
       background: white;
       z-index: 9999;
-      animation: scrollbarMove linear infinite;
+      animation: scrollbarMove 2s linear infinite;
     }
 
     @keyframes scrollbarMove {
@@ -60,9 +61,16 @@
     }
 
     header h1 {
-      font-family: 'Syne', sans-serif;
       font-size: 3rem;
       font-style: italic;
+      animation: wobblyText 2s infinite ease-in-out;
+    }
+
+    @keyframes wobblyText {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(1deg); }
+      50% { transform: rotate(-1.5deg); }
+      75% { transform: rotate(1deg); }
     }
 
     .video-placeholder {
@@ -99,11 +107,20 @@
       text-decoration: none;
       color: var(--main-color);
       font-size: 1.5rem;
-      transition: opacity 0.3s ease;
+      transition: transform 0.3s ease;
+      display: inline-block;
     }
 
     .socials a:hover {
-      opacity: 0.7;
+      animation: wave 0.8s ease-in-out infinite;
+    }
+
+    @keyframes wave {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(2deg); }
+      50% { transform: rotate(-2deg); }
+      75% { transform: rotate(2deg); }
+      100% { transform: rotate(0deg); }
     }
   </style>
 </head>
@@ -135,9 +152,9 @@
     const stars = Array.from({ length: 10 }).map(() => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      dx: (Math.random() - 0.5) * 2,
-      dy: (Math.random() - 0.5) * 2,
-      r: Math.floor(Math.random() * 8) + 6,
+      dx: (Math.random() - 0.5) * 1.5,
+      dy: (Math.random() - 0.5) * 1.5,
+      r: Math.floor(Math.random() * 30) + 60,
       color: Math.random() > 0.5 ? '#001ade' : '#de00ae'
     }));
 
@@ -175,26 +192,13 @@
         if (s.x < 0 || s.x > canvas.width) s.dx *= -1;
         if (s.y < 0 || s.y > canvas.height) s.dy *= -1;
 
-        for (let j = i + 1; j < stars.length; j++) {
-          const other = stars[j];
-          const dx = s.x - other.x;
-          const dy = s.y - other.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 20) {
-            let angle = Math.atan2(dy, dx);
-            s.dx = Math.cos(angle);
-            s.dy = Math.sin(angle);
-            other.dx = -Math.cos(angle);
-            other.dy = -Math.sin(angle);
-          }
-        }
-
         drawStar(s.x, s.y, 8, s.r, s.r / 2, s.color);
       });
       requestAnimationFrame(animate);
     }
 
     animate();
+
     window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;

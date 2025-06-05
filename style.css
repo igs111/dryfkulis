@@ -1,4 +1,4 @@
-  :root {
+:root {
   --bg: #000;
   --fg: #fff;
   --blue: #001ade;
@@ -34,22 +34,7 @@ body {
   opacity: 0.13;
   mix-blend-mode: screen;
 }
-.scroll-slider {
-  position: fixed;
-  left: 16px;
-  top: 0;
-  width: 18px;
-  height: 60px;
-  background: var(--fg);
-  border-radius: 999px;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.12);
-  z-index: 10;
-  transition: box-shadow 0.2s;
-  will-change: transform;
-}
-@media (max-width: 600px) {
-  .scroll-slider { left: 6px; width: 14px; height: 40px; }
-}
+/* .scroll-slider usunięty */
 .main-content {
   position: relative;
   z-index: 2;
@@ -136,12 +121,12 @@ body {
 .social-links {
   display: flex;
   flex-direction: row;
-  gap: 24px;
+  gap: 32px;
   justify-content: center;
   width: 100%;
-  max-width: 900px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  max-width: 700px;
+  flex-wrap: wrap;
+  overflow-x: visible;
   margin-bottom: 8px;
 }
 .social-link {
@@ -151,15 +136,15 @@ body {
   font-size: 1.45rem;
   font-weight: 600;
   position: relative;
-  transition: color 0.2s, font-weight 0.2s, transform 0.18s cubic-bezier(.36,.07,.19,.97), background 0.2s, box-shadow 0.2s;
+  transition: color 0.2s, font-weight 0.2s, transform 0.18s cubic-bezier(.36,.07,.19,.97);
   cursor: pointer;
   display: inline-block;
-  padding: 8px 22px;
+  padding: 2px 8px;
   will-change: transform, font-weight;
   white-space: nowrap;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #001ade22 0%, #de00ae22 100%);
-  box-shadow: 0 2px 16px 0 #001ade22;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
   letter-spacing: 0.03em;
 }
 .social-link:hover, .social-link:focus {
@@ -167,13 +152,11 @@ body {
   font-weight: bold;
   transform: scale(1.17) translateY(-2px) rotate(-2deg);
   animation: wave-soft 0.5s cubic-bezier(.36,.07,.19,.97) both;
-  background: linear-gradient(90deg, #de00ae44 0%, #001ade44 100%);
-  box-shadow: 0 4px 32px 0 #de00ae44;
   outline: none;
 }
 .social-link:active {
   transform: scale(1.08) translateY(1px);
-  background: linear-gradient(90deg, #001ade33 0%, #de00ae33 100%);
+  background: none;
 }
 @media (max-width: 600px) {
   .social-links { gap: 8px; font-size: 1.1rem; }

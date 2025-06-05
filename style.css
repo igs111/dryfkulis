@@ -1,31 +1,67 @@
-/* style.css */
+:root {
+  --main-color: #ffffff;
+  --background-color: #000000;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: sans-serif;
-  background: #111;
-  color: white;
+  font-family: 'Cormorant', serif;
+  background-color: var(--background-color);
+  color: var(--main-color);
+}
+
+header {
+  background-color: var(--background-color);
+  color: var(--main-color);
+  text-align: center;
+  padding: 4rem 1rem 2rem;
+}
+
+header h1 {
+  font-size: 3rem;
+  font-style: italic;
+}
+
+.video-placeholder {
+  margin: 3rem auto;
+  width: 80%;
+  max-width: 800px;
+  height: 450px;
+  background-color: #111;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  margin: 0;
+  color: var(--main-color);
+  font-style: italic;
 }
 
-.fade-in {
-  animation: fadeIn 2s ease-in-out forwards;
-  opacity: 0;
+.section {
+  padding: 3rem 1rem;
+  text-align: center;
 }
 
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
+.socials {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
 }
 
-.box {
-  width: 100px;
-  height: 100px;
-  background-color: hotpink;
-  margin-top: 20px;
-  transition: transform 0.5s ease;
+.socials a {
+  text-decoration: none;
+  color: var(--main-color);
+  font-size: 1.5rem;
+  text-transform: lowercase;
+  transition: opacity 0.3s ease;
+}
+
+.socials a:hover {
+  opacity: 0.6;
 }

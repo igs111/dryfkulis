@@ -133,19 +133,7 @@ window.addEventListener('mousemove', e => {
 window.addEventListener('mouseleave', () => {
   mouse.x = -1000; mouse.y = -1000;
 });
-// --- Scroll Slider ---
-const slider = document.getElementById('scrollSlider');
-function updateSlider() {
-  const docH = document.documentElement.scrollHeight - window.innerHeight;
-  const scrollY = window.scrollY || window.pageYOffset;
-  const percent = docH > 0 ? scrollY / docH : 0;
-  const sliderH = slider.offsetHeight;
-  const maxY = window.innerHeight - sliderH - 16;
-  slider.style.transform = `translateY(${16 + percent * maxY}px)`;
-}
-window.addEventListener('scroll', updateSlider);
-window.addEventListener('resize', updateSlider);
-updateSlider();
+// --- Scroll Slider usunięty ---
 // --- Wężowa animacja liter nagłówka ---
 const headerText = 'dryf kulis';
 const header = document.getElementById('header');

@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dryf kulis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,700;1,400&family=Syne:wght@700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --main-color: #ffffff;
       --background-color: #000000;
+      --star-color-1: #001ade;
+      --star-color-2: #de00ae;
     }
 
     * {
@@ -18,20 +20,47 @@
       scroll-behavior: smooth;
     }
 
-    body {
+    html, body {
+      height: 100%;
       font-family: 'Cormorant', serif;
       background-color: var(--background-color);
       color: var(--main-color);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 10px;
+      width: 4px;
+      height: 100vh;
+      background: white;
+      z-index: 9999;
+      animation: scrollbarMove linear infinite;
+    }
+
+    @keyframes scrollbarMove {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(100vh); }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
     }
 
     header {
-      background-color: var(--background-color);
-      color: var(--main-color);
       text-align: center;
       padding: 4rem 1rem 2rem;
+      position: relative;
+      z-index: 1;
     }
 
     header h1 {
+      font-family: 'Syne', sans-serif;
       font-size: 3rem;
       font-style: italic;
     }
@@ -47,35 +76,40 @@
       justify-content: center;
       color: var(--main-color);
       font-style: italic;
+      z-index: 1;
+      position: relative;
     }
 
     .section {
       padding: 3rem 1rem;
       text-align: center;
+      position: relative;
+      z-index: 1;
     }
 
     .socials {
       margin-top: 2rem;
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      gap: 1.5rem;
+      gap: 2rem;
+      flex-wrap: wrap;
     }
 
     .socials a {
       text-decoration: none;
       color: var(--main-color);
       font-size: 1.5rem;
-      text-transform: lowercase;
       transition: opacity 0.3s ease;
     }
 
     .socials a:hover {
-      opacity: 0.6;
+      opacity: 0.7;
     }
   </style>
 </head>
 <body>
+  <canvas id="stars"></canvas>
+
   <header>
     <h1><em>dryf kulis</em></h1>
     <div class="video-placeholder">[TUTAJ TRAILER ALBUMU]</div>
@@ -84,12 +118,87 @@
   <section class="section">
     <h2 style="font-weight: bold">znajdź mnie tutaj</h2>
     <div class="socials">
-      <a href="https://open.spotify.com/artist/0HCypyxxGMdbQxeGFpHUug" target="_blank">spotify</a>
-      <a href="https://www.youtube.com/@dryfkulis" target="_blank">youtube</a>
-      <a href="https://music.apple.com/pl/artist/iqciu/1637684331" target="_blank">apple music</a>
-      <a href="https://www.tiktok.com/@dryfkulis" target="_blank">tiktok</a>
-      <a href="https://www.instagram.com/dryfkulis/" target="_blank">instagram</a>
+      <a href="https://open.spotify.com/artist/0HCypyxxGMdbQxeGFpHUug" target="_blank">Spotify</a>
+      <a href="https://www.youtube.com/@dryfkulis" target="_blank">YouTube</a>
+      <a href="https://music.apple.com/pl/artist/iqciu/1637684331" target="_blank">Apple Music</a>
+      <a href="https://www.tiktok.com/@dryfkulis" target="_blank">TikTok</a>
+      <a href="https://www.instagram.com/dryfkulis/" target="_blank">Instagram</a>
     </div>
   </section>
+
+  <script>
+    const canvas = document.getElementById('stars');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const stars = Array.from({ length: 10 }).map(() => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      dx: (Math.random() - 0.5) * 2,
+      dy: (Math.random() - 0.5) * 2,
+      r: Math.floor(Math.random() * 8) + 6,
+      color: Math.random() > 0.5 ? '#001ade' : '#de00ae'
+    }));
+
+    function drawStar(cx, cy, spikes, outerRadius, innerRadius, color) {
+      let rot = Math.PI / 2 * 3;
+      let x = cx;
+      let y = cy;
+      let step = Math.PI / spikes;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - outerRadius);
+      for (let i = 0; i < spikes; i++) {
+        x = cx + Math.cos(rot) * outerRadius;
+        y = cy + Math.sin(rot) * outerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+      }
+      ctx.lineTo(cx, cy - outerRadius);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach((s, i) => {
+        s.x += s.dx;
+        s.y += s.dy;
+
+        if (s.x < 0 || s.x > canvas.width) s.dx *= -1;
+        if (s.y < 0 || s.y > canvas.height) s.dy *= -1;
+
+        for (let j = i + 1; j < stars.length; j++) {
+          const other = stars[j];
+          const dx = s.x - other.x;
+          const dy = s.y - other.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 20) {
+            let angle = Math.atan2(dy, dx);
+            s.dx = Math.cos(angle);
+            s.dy = Math.sin(angle);
+            other.dx = -Math.cos(angle);
+            other.dy = -Math.sin(angle);
+          }
+        }
+
+        drawStar(s.x, s.y, 8, s.r, s.r / 2, s.color);
+      });
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
 </body>
 </html>

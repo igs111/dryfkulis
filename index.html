@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dryf kulis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
   <style>
     :root {
       --main-color: #ffffff;
@@ -19,7 +19,7 @@
     }
 
     body {
-      font-family: 'Oswald', sans-serif;
+      font-family: 'Cormorant', serif;
       background-color: var(--background-color);
       color: var(--main-color);
     }
@@ -29,7 +29,6 @@
       color: var(--main-color);
       text-align: center;
       padding: 4rem 1rem 2rem;
-      position: relative;
     }
 
     header h1 {
@@ -58,6 +57,7 @@
     .socials {
       margin-top: 2rem;
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
       gap: 1.5rem;
     }
@@ -65,16 +65,15 @@
     .socials a {
       text-decoration: none;
       color: var(--main-color);
-      font-size: 2rem;
-      transition: transform 0.3s ease;
+      font-size: 1.5rem;
+      text-transform: lowercase;
+      transition: opacity 0.3s ease;
     }
 
     .socials a:hover {
-      transform: scale(1.1);
-      color: #999;
+      opacity: 0.6;
     }
   </style>
-  <script src="https://kit.fontawesome.com/5ad99f0d34.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <header>
@@ -85,11 +84,11 @@
   <section class="section">
     <h2 style="font-weight: bold">znajdź mnie tutaj</h2>
     <div class="socials">
-      <a href="https://open.spotify.com/artist/0HCypyxxGMdbQxeGFpHUug" target="_blank" aria-label="Spotify"><i class="fab fa-spotify"></i></a>
-      <a href="https://www.youtube.com/@dryfkulis" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-      <a href="https://music.apple.com/pl/artist/iqciu/1637684331" target="_blank" aria-label="Apple Music"><i class="fab fa-apple"></i></a>
-      <a href="https://www.tiktok.com/@dryfkulis" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-      <a href="https://www.instagram.com/dryfkulis/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="https://open.spotify.com/artist/0HCypyxxGMdbQxeGFpHUug" target="_blank">spotify</a>
+      <a href="https://www.youtube.com/@dryfkulis" target="_blank">youtube</a>
+      <a href="https://music.apple.com/pl/artist/iqciu/1637684331" target="_blank">apple music</a>
+      <a href="https://www.tiktok.com/@dryfkulis" target="_blank">tiktok</a>
+      <a href="https://www.instagram.com/dryfkulis/" target="_blank">instagram</a>
     </div>
   </section>
 </body>

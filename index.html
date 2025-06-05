@@ -70,17 +70,15 @@
       margin-bottom: 32px;
       color: var(--fg);
       text-align: center;
-      display: inline-block;
-      animation: wobble 2.2s infinite linear alternate;
-      transform-origin: 60% 60%;
+      display: flex;
+      justify-content: center;
+      gap: 0.04em;
+      user-select: none;
     }
-    @keyframes wobble {
-      0% { transform: rotate(-2deg) skewX(-2deg) scale(1.01); }
-      20% { transform: rotate(2deg) skewX(2deg) scale(1.02); }
-      40% { transform: rotate(-1.5deg) skewX(-1.5deg) scale(1.01); }
-      60% { transform: rotate(2.5deg) skewX(2deg) scale(1.03); }
-      80% { transform: rotate(-2deg) skewX(-2deg) scale(1.01); }
-      100% { transform: rotate(1deg) skewX(1deg) scale(1.01); }
+    .header-letter {
+      display: inline-block;
+      will-change: transform;
+      transition: color 0.2s;
     }
     .video-placeholder {
       width: 100%;
@@ -135,23 +133,23 @@
       font-size: 1.15rem;
       font-weight: 500;
       position: relative;
-      transition: color 0.2s;
+      transition: color 0.2s, font-weight 0.2s, transform 0.18s cubic-bezier(.36,.07,.19,.97);
       cursor: pointer;
       display: inline-block;
       padding: 2px 8px;
-      will-change: transform;
+      will-change: transform, font-weight;
     }
     .social-link:hover {
-      animation: wave 0.7s cubic-bezier(.36,.07,.19,.97) both;
       color: var(--pink);
+      font-weight: bold;
+      transform: scale(1.11) translateX(2px) rotate(-2deg);
+      animation: wave-soft 0.5s cubic-bezier(.36,.07,.19,.97) both;
     }
-    @keyframes wave {
-      0% { transform: rotate(0deg) skewX(0deg); }
-      20% { transform: rotate(-7deg) skewX(-7deg); }
-      40% { transform: rotate(6deg) skewX(6deg); }
-      60% { transform: rotate(-5deg) skewX(-5deg); }
-      80% { transform: rotate(3deg) skewX(3deg); }
-      100% { transform: rotate(0deg) skewX(0deg); }
+    @keyframes wave-soft {
+      0% { transform: scale(1.11) translateX(0px) rotate(0deg); }
+      30% { transform: scale(1.13) translateX(-2px) rotate(-3deg); }
+      60% { transform: scale(1.10) translateX(2px) rotate(2deg); }
+      100% { transform: scale(1.11) translateX(0px) rotate(0deg); }
     }
     /* Responsive tweaks */
     @media (max-width: 900px) {
@@ -168,7 +166,7 @@
   <canvas id="star-bg"></canvas>
   <div class="scroll-slider" id="scrollSlider"></div>
   <div class="main-content">
-    <div class="header">dryf kulis</div>
+    <div class="header" id="header"></div>
     <div class="video-placeholder">[TUTAJ TRAILER ALBUMU]</div>
     <section class="social-section">
       <div class="social-title">znajdź mnie tutaj</div>
@@ -182,7 +180,7 @@
     </section>
   </div>
   <script>
-    // --- Star Animation ---
+    // --- Star Animation with Collision ---
     const STAR_COLORS = ['#001ade', '#de00ae'];
     const STAR_COUNT = 10;
     const STAR_MIN_RADIUS = 60;
@@ -222,11 +220,45 @@
       ctx.closePath();
       ctx.fillStyle = s.color;
       ctx.globalAlpha = 0.85;
-      ctx.shadowColor = s.color;
-      ctx.shadowBlur = 24;
+      // Usunięcie cienia:
+      // ctx.shadowColor = s.color;
+      // ctx.shadowBlur = 24;
       ctx.fill();
       ctx.globalAlpha = 1;
       ctx.restore();
+    }
+    function handleCollisions() {
+      for (let i = 0; i < stars.length; i++) {
+        for (let j = i + 1; j < stars.length; j++) {
+          const a = stars[i], b = stars[j];
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          const minDist = a.r + b.r - 18; // lekki overlap
+          if (dist < minDist && dist > 0) {
+            // Prosta reakcja: zamiana prędkości (elastyczne odbicie)
+            const angle = Math.atan2(dy, dx);
+            const totalMass = a.r + b.r;
+            // Rozkład prędkości na składowe
+            const va = a.vx * Math.cos(angle) + a.vy * Math.sin(angle);
+            const vb = b.vx * Math.cos(angle) + b.vy * Math.sin(angle);
+            // Zamiana składowych
+            const vaNew = ((a.r - b.r) * va + 2 * b.r * vb) / totalMass;
+            const vbNew = ((b.r - a.r) * vb + 2 * a.r * va) / totalMass;
+            // Aktualizacja prędkości
+            a.vx += (vaNew - va) * Math.cos(angle);
+            a.vy += (vaNew - va) * Math.sin(angle);
+            b.vx += (vbNew - vb) * Math.cos(angle);
+            b.vy += (vbNew - vb) * Math.sin(angle);
+            // Odsunięcie gwiazdek
+            const overlap = minDist - dist;
+            a.x -= Math.cos(angle) * (overlap/2);
+            a.y -= Math.sin(angle) * (overlap/2);
+            b.x += Math.cos(angle) * (overlap/2);
+            b.y += Math.sin(angle) * (overlap/2);
+          }
+        }
+      }
     }
     function animateStars() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -239,8 +271,9 @@
         if (s.x + s.r > canvas.width && s.vx > 0) s.vx *= -1;
         if (s.y - s.r < 0 && s.vy < 0) s.vy *= -1;
         if (s.y + s.r > canvas.height && s.vy > 0) s.vy *= -1;
-        drawStar(s);
       }
+      handleCollisions();
+      for (const s of stars) drawStar(s);
       requestAnimationFrame(animateStars);
     }
     function initStars() {
@@ -269,17 +302,39 @@
     window.addEventListener('resize', updateSlider);
     updateSlider();
 
-    // --- Wobbly Header (extra JS for more organic effect) ---
-    const header = document.querySelector('.header');
-    let wobbleT = 0;
-    function headerWobble() {
-      wobbleT += 0.04;
-      const rot = Math.sin(wobbleT) * 2.2 + Math.cos(wobbleT*0.7) * 1.2;
-      const skew = Math.cos(wobbleT*1.2) * 2.2;
-      header.style.transform = `rotate(${rot}deg) skewX(${skew}deg) scale(1.01)`;
-      requestAnimationFrame(headerWobble);
+    // --- Wężowa animacja liter nagłówka ---
+    const headerText = 'dryf kulis';
+    const header = document.getElementById('header');
+    header.innerHTML = '';
+    for (let i = 0; i < headerText.length; i++) {
+      const span = document.createElement('span');
+      span.className = 'header-letter';
+      span.textContent = headerText[i] === ' ' ? '\u00A0' : headerText[i];
+      header.appendChild(span);
     }
-    headerWobble();
+    const headerLetters = document.querySelectorAll('.header-letter');
+    function animateHeaderLetters(t) {
+      for (let i = 0; i < headerLetters.length; i++) {
+        const phase = t/600 + i*0.32;
+        const y = Math.sin(phase) * 10;
+        const rot = Math.sin(phase) * 12;
+        headerLetters[i].style.transform = `translateY(${y}px) rotate(${rot}deg)`;
+      }
+      requestAnimationFrame(animateHeaderLetters);
+    }
+    animateHeaderLetters(0);
+
+    // --- Social links: delikatny wobbly i powiększenie ---
+    const socialLinks = document.querySelectorAll('.social-link');
+    socialLinks.forEach(link => {
+      link.addEventListener('mouseenter', () => {
+        link.style.fontWeight = 'bold';
+        link.style.transition = 'color 0.2s, font-weight 0.2s, transform 0.18s cubic-bezier(.36,.07,.19,.97)';
+      });
+      link.addEventListener('mouseleave', () => {
+        link.style.fontWeight = '500';
+      });
+    });
   </script>
 </body>
 </html>

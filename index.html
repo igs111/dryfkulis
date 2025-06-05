@@ -7,9 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Oswald:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --main-blue: #557899;
-      --light-blue: #BCDDFC;
-      --white: #ffffff;
+      --main-color: #ffffff;
+      --background-color: #000000;
     }
 
     * {
@@ -21,13 +20,13 @@
 
     body {
       font-family: 'Oswald', sans-serif;
-      background-color: var(--white);
-      color: var(--main-blue);
+      background-color: var(--background-color);
+      color: var(--main-color);
     }
 
     header {
-      background-color: var(--main-blue);
-      color: var(--white);
+      background-color: var(--background-color);
+      color: var(--main-color);
       text-align: center;
       padding: 4rem 1rem 2rem;
       position: relative;
@@ -36,19 +35,6 @@
     header h1 {
       font-size: 3rem;
       font-style: italic;
-      animation: dropIn 1s ease-out forwards;
-      opacity: 0;
-    }
-
-    @keyframes dropIn {
-      0% {
-        transform: translateY(-100px);
-        opacity: 0;
-      }
-      100% {
-        transform: translateY(0);
-        opacity: 1;
-      }
     }
 
     .video-placeholder {
@@ -56,25 +42,17 @@
       width: 80%;
       max-width: 800px;
       height: 450px;
-      background-color: var(--light-blue);
+      background-color: #111;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--main-blue);
+      color: var(--main-color);
       font-style: italic;
     }
 
     .section {
       padding: 3rem 1rem;
       text-align: center;
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 0.8s ease-out;
-    }
-
-    .section.visible {
-      opacity: 1;
-      transform: translateY(0);
     }
 
     .socials {
@@ -86,38 +64,23 @@
 
     .socials a {
       text-decoration: none;
-      color: var(--main-blue);
+      color: var(--main-color);
       font-size: 2rem;
       transition: transform 0.3s ease;
     }
 
     .socials a:hover {
       transform: scale(1.1);
-      color: var(--light-blue);
+      color: #999;
     }
   </style>
-  <script>
-    window.addEventListener('scroll', () => {
-      document.querySelectorAll('.section').forEach(section => {
-        const rect = section.getBoundingClientRect();
-        if (rect.top < window.innerHeight - 100) {
-          section.classList.add('visible');
-        }
-      });
-    });
-  </script>
   <script src="https://kit.fontawesome.com/5ad99f0d34.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <header>
-    <h1>dryf kulis</h1>
+    <h1><em>dryf kulis</em></h1>
     <div class="video-placeholder">[TUTAJ TRAILER ALBUMU]</div>
   </header>
-
-  <section class="section">
-    <h2 style="font-weight: bold">kim jestem?</h2>
-    <p>artysta cyfrowy, wokal, eksperyment, głos epoki... więcej wkrótce.</p>
-  </section>
 
   <section class="section">
     <h2 style="font-weight: bold">znajdź mnie tutaj</h2>

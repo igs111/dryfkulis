@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dryf kulis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .wave-text span {
+      display: inline-block;
+      animation: waveMove 2s infinite ease-in-out;
+    }
+    .wave-text span:nth-child(odd) { animation-delay: 0.1s; }
+    .wave-text span:nth-child(even) { animation-delay: 0.2s; }
+
+    @keyframes waveMove {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-0.4em); }
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQI12NgYGAAAAAEAAEnNCcEAAAAAElFTkSuQmCC");
+      opacity: 0.05;
+      z-index: 9999;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars"></canvas>
+  <header>
+    <h1 class="wave-text">
+      <span>d</span><span>r</span><span>y</span><span>f</span>
+      <span> </span>
+      <span>k</span><span>u</span><span>l</span><span>i</span><span>s</span>
+    </h1>
+    <div class="video-placeholder">[TUTAJ TRAILER ALBUMU]</div>
+  </header>
+
+  <section class="section">
+    <h2 style="font-weight: bold">znajdź mnie tutaj</h2>
+    <div class="socials">
+      <a href="https://open.spotify.com/artist/0HCypyxxGMdbQxeGFpHUug" target="_blank">Spotify</a>
+      <a href="https://www.youtube.com/@dryfkulis" target="_blank">YouTube</a>
+      <a href="https://music.apple.com/pl/artist/iqciu/1637684331" target="_blank">Apple Music</a>
+      <a href="https://www.tiktok.com/@dryfkulis" target="_blank">TikTok</a>
+      <a href="https://www.instagram.com/dryfkulis/" target="_blank">Instagram</a>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>

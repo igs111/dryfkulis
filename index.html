@@ -34,6 +34,14 @@
       pointer-events: none;
       touch-action: none;
     }
+    #grain {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.13;
+      mix-blend-mode: screen;
+    }
     .scroll-slider {
       position: fixed;
       left: 16px;
@@ -79,6 +87,8 @@
       gap: 0.04em;
       user-select: none;
       flex-wrap: wrap;
+      letter-spacing: 0.04em;
+      filter: drop-shadow(0 2px 8px #001ade44);
     }
     @media (max-width: 500px) {
       .header { font-size: 1.5rem; }
@@ -107,6 +117,7 @@
       font-style: italic;
       text-align: center;
       user-select: none;
+      box-shadow: 0 4px 32px 0 #001ade22;
     }
     @media (max-width: 700px) {
       .video-placeholder { font-size: 1.1rem; max-width: 98vw; }
@@ -128,54 +139,68 @@
       margin-bottom: 18px;
       text-align: center;
       letter-spacing: 0.04em;
+      filter: drop-shadow(0 1px 4px #de00ae33);
     }
     .social-links {
       display: flex;
       flex-direction: row;
-      gap: 18px;
+      gap: 24px;
       justify-content: center;
       width: 100%;
-      max-width: 700px;
+      max-width: 900px;
       flex-wrap: nowrap;
       overflow-x: auto;
+      margin-bottom: 8px;
     }
     .social-link {
       color: var(--fg);
       text-decoration: none;
       font-family: var(--syne);
-      font-size: 1.15rem;
-      font-weight: 500;
+      font-size: 1.45rem;
+      font-weight: 600;
       position: relative;
-      transition: color 0.2s, font-weight 0.2s, transform 0.18s cubic-bezier(.36,.07,.19,.97);
+      transition: color 0.2s, font-weight 0.2s, transform 0.18s cubic-bezier(.36,.07,.19,.97), background 0.2s, box-shadow 0.2s;
       cursor: pointer;
       display: inline-block;
-      padding: 2px 8px;
+      padding: 8px 22px;
       will-change: transform, font-weight;
       white-space: nowrap;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #001ade22 0%, #de00ae22 100%);
+      box-shadow: 0 2px 16px 0 #001ade22;
+      letter-spacing: 0.03em;
     }
     .social-link:hover, .social-link:focus {
       color: var(--pink);
       font-weight: bold;
-      transform: scale(1.11) translateX(2px) rotate(-2deg);
+      transform: scale(1.17) translateY(-2px) rotate(-2deg);
       animation: wave-soft 0.5s cubic-bezier(.36,.07,.19,.97) both;
+      background: linear-gradient(90deg, #de00ae44 0%, #001ade44 100%);
+      box-shadow: 0 4px 32px 0 #de00ae44;
+      outline: none;
+    }
+    .social-link:active {
+      transform: scale(1.08) translateY(1px);
+      background: linear-gradient(90deg, #001ade33 0%, #de00ae33 100%);
     }
     @media (max-width: 600px) {
-      .social-links { gap: 6px; font-size: 0.95rem; }
-      .social-link { font-size: 0.95rem; padding: 2px 4px; }
+      .social-links { gap: 8px; font-size: 1.1rem; }
+      .social-link { font-size: 1.1rem; padding: 6px 10px; }
     }
     @media (max-width: 400px) {
-      .social-link { font-size: 0.85rem; padding: 2px 2px; }
+      .social-link { font-size: 0.95rem; padding: 4px 6px; }
     }
     @keyframes wave-soft {
-      0% { transform: scale(1.11) translateX(0px) rotate(0deg); }
-      30% { transform: scale(1.13) translateX(-2px) rotate(-3deg); }
-      60% { transform: scale(1.10) translateX(2px) rotate(2deg); }
-      100% { transform: scale(1.11) translateX(0px) rotate(0deg); }
+      0% { transform: scale(1.17) translateY(-2px) rotate(0deg); }
+      30% { transform: scale(1.19) translateY(-4px) rotate(-3deg); }
+      60% { transform: scale(1.15) translateY(-2px) rotate(2deg); }
+      100% { transform: scale(1.17) translateY(-2px) rotate(0deg); }
     }
   </style>
 </head>
 <body>
   <canvas id="star-bg"></canvas>
+  <canvas id="grain"></canvas>
   <div class="scroll-slider" id="scrollSlider"></div>
   <div class="main-content">
     <div class="header" id="header"></div>
@@ -192,7 +217,7 @@
     </section>
   </div>
   <script>
-    // --- Star Animation with Collision, Mobile Optimized ---
+    // --- Star Animation with Collision, Mobile Optimized, Cursor Repel ---
     let STAR_COLORS = ['#001ade', '#de00ae'];
     let STAR_COUNT = 10;
     let STAR_MIN_RADIUS = 60;
@@ -202,13 +227,13 @@
     const stars = [];
     const canvas = document.getElementById('star-bg');
     const ctx = canvas.getContext('2d');
+    let mouse = {x: -1000, y: -1000};
     function isMobile() {
       return window.innerWidth < 600;
     }
     function resizeCanvas() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      // Zmiana rozmiaru i liczby gwiazdek na telefonie
       if (isMobile()) {
         STAR_MIN_RADIUS = 28;
         STAR_MAX_RADIUS = 48;
@@ -256,23 +281,18 @@
           const dx = b.x - a.x;
           const dy = b.y - a.y;
           const dist = Math.sqrt(dx*dx + dy*dy);
-          const minDist = a.r + b.r - 18; // lekki overlap
+          const minDist = a.r + b.r - 18;
           if (dist < minDist && dist > 0) {
-            // Prosta reakcja: zamiana prędkości (elastyczne odbicie)
             const angle = Math.atan2(dy, dx);
             const totalMass = a.r + b.r;
-            // Rozkład prędkości na składowe
             const va = a.vx * Math.cos(angle) + a.vy * Math.sin(angle);
             const vb = b.vx * Math.cos(angle) + b.vy * Math.sin(angle);
-            // Zamiana składowych
             const vaNew = ((a.r - b.r) * va + 2 * b.r * vb) / totalMass;
             const vbNew = ((b.r - a.r) * vb + 2 * a.r * va) / totalMass;
-            // Aktualizacja prędkości
             a.vx += (vaNew - va) * Math.cos(angle);
             a.vy += (vaNew - va) * Math.sin(angle);
             b.vx += (vbNew - vb) * Math.cos(angle);
             b.vy += (vbNew - vb) * Math.sin(angle);
-            // Odsunięcie gwiazdek
             const overlap = minDist - dist;
             a.x -= Math.cos(angle) * (overlap/2);
             a.y -= Math.sin(angle) * (overlap/2);
@@ -282,17 +302,33 @@
         }
       }
     }
+    function repelFromCursor(s) {
+      const dx = s.x - mouse.x;
+      const dy = s.y - mouse.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const minDist = s.r + 60;
+      if (dist < minDist && dist > 0) {
+        // Delikatne odpychanie
+        const force = (minDist - dist) * 0.04;
+        s.vx += (dx/dist) * force;
+        s.vy += (dy/dist) * force;
+        // Ogranicz prędkość
+        s.vx = Math.max(Math.min(s.vx, 2), -2);
+        s.vy = Math.max(Math.min(s.vy, 2), -2);
+      }
+    }
     function animateStars() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       for (const s of stars) {
         s.x += s.vx;
         s.y += s.vy;
         s.angle += s.spin;
-        // Bounce off edges (zabezpieczenie przed bugowaniem na krawędziach)
+        // Bounce off edges
         if (s.x - s.r < 0) { s.x = s.r; s.vx = Math.abs(s.vx); }
         if (s.x + s.r > canvas.width) { s.x = canvas.width - s.r; s.vx = -Math.abs(s.vx); }
         if (s.y - s.r < 0) { s.y = s.r; s.vy = Math.abs(s.vy); }
         if (s.y + s.r > canvas.height) { s.y = canvas.height - s.r; s.vy = -Math.abs(s.vy); }
+        repelFromCursor(s);
       }
       handleCollisions();
       for (const s of stars) drawStar(s);
@@ -309,7 +345,14 @@
     window.addEventListener('resize', reinitStars);
     reinitStars();
     animateStars();
-
+    // Obsługa kursora
+    window.addEventListener('mousemove', e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+    window.addEventListener('mouseleave', () => {
+      mouse.x = -1000; mouse.y = -1000;
+    });
     // --- Scroll Slider ---
     const slider = document.getElementById('scrollSlider');
     function updateSlider() {
@@ -323,7 +366,6 @@
     window.addEventListener('scroll', updateSlider);
     window.addEventListener('resize', updateSlider);
     updateSlider();
-
     // --- Wężowa animacja liter nagłówka ---
     const headerText = 'dryf kulis';
     const header = document.getElementById('header');
@@ -345,18 +387,38 @@
       requestAnimationFrame(animateHeaderLetters);
     }
     animateHeaderLetters(0);
-
     // --- Social links: delikatny wobbly i powiększenie ---
     const socialLinks = document.querySelectorAll('.social-link');
     socialLinks.forEach(link => {
       link.addEventListener('mouseenter', () => {
         link.style.fontWeight = 'bold';
-        link.style.transition = 'color 0.2s, font-weight 0.2s, transform 0.18s cubic-bezier(.36,.07,.19,.97)';
+        link.style.transition = 'color 0.2s, font-weight 0.2s, transform 0.18s cubic-bezier(.36,.07,.19,.97), background 0.2s, box-shadow 0.2s';
       });
       link.addEventListener('mouseleave', () => {
-        link.style.fontWeight = '500';
+        link.style.fontWeight = '600';
       });
     });
+    // --- Grain/Noise Texture ---
+    const grainCanvas = document.getElementById('grain');
+    function drawGrain() {
+      const w = window.innerWidth, h = window.innerHeight;
+      grainCanvas.width = w;
+      grainCanvas.height = h;
+      const gctx = grainCanvas.getContext('2d');
+      const imageData = gctx.createImageData(w, h);
+      for (let i = 0; i < w * h; i++) {
+        const shade = Math.floor(Math.random() * 32);
+        imageData.data[i*4+0] = shade;
+        imageData.data[i*4+1] = shade;
+        imageData.data[i*4+2] = shade;
+        imageData.data[i*4+3] = 18; // alpha
+      }
+      gctx.putImageData(imageData, 0, 0);
+    }
+    drawGrain();
+    window.addEventListener('resize', drawGrain);
+    // Odświeżaj szum co 0.5s dla "żywego" efektu
+    setInterval(drawGrain, 500);
   </script>
 </body>
 </html>
